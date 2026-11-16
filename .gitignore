@@ -46,3 +46,13 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+
+# Segredos: chaves de API ficam em env.json (fora do git) e entram no app com
+# `flutter run --dart-define-from-file=env.json`. Versione só o env.example.json.
+.env
+.env.*
+env.json
+
+# O APK vai para a aba Releases do GitHub, não para o repositório.
+*.apk
+*.aab
