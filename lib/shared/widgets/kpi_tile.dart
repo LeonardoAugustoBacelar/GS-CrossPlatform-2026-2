@@ -43,72 +43,71 @@ class KpiTile extends StatelessWidget {
         ? context.severity.high
         : (better ? context.severity.low : theme.colorScheme.onSurfaceVariant);
 
+    // Um nó só para o leitor de tela, com rótulo completo e a ação de toque.
     return Semantics(
       button: onTap != null,
       label: [label, '$value ${unit ?? ''}', ?changeText, ?caption].join(', '),
-      child: ExcludeSemantics(
-        child: Card(
-          clipBehavior: Clip.antiAlias,
-          child: InkWell(
-            onTap: onTap,
-            child: Padding(
-              padding: const EdgeInsets.all(AppSpacing.md),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    label,
-                    style: theme.textTheme.labelLarge?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
+      onTap: onTap,
+      excludeSemantics: true,
+      child: Card(
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.md),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
                   ),
-                  const SizedBox(height: AppSpacing.xs),
-                  Text.rich(
-                    TextSpan(
-                      children: [
+                ),
+                const SizedBox(height: AppSpacing.xs),
+                Text.rich(
+                  TextSpan(
+                    children: [
+                      TextSpan(
+                        text: value,
+                        style: theme.textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      if (unit != null)
                         TextSpan(
-                          text: value,
-                          style: theme.textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
+                          text: ' $unit',
+                          style: theme.textTheme.bodyMedium,
                         ),
-                        if (unit != null)
-                          TextSpan(
-                            text: ' $unit',
-                            style: theme.textTheme.bodyMedium,
-                          ),
-                      ],
-                    ),
+                    ],
                   ),
-                  if (changeText != null) ...[
-                    const SizedBox(height: AppSpacing.xs),
-                    Row(
-                      children: [
-                        Icon(
-                          change! >= 0
-                              ? Icons.trending_up
-                              : Icons.trending_down,
-                          size: 18,
-                          color: changeColor,
-                        ),
-                        const SizedBox(width: AppSpacing.xs),
-                        Flexible(
-                          child: Text(
-                            changeText,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: changeColor,
-                            ),
+                ),
+                if (changeText != null) ...[
+                  const SizedBox(height: AppSpacing.xs),
+                  Row(
+                    children: [
+                      Icon(
+                        change! >= 0 ? Icons.trending_up : Icons.trending_down,
+                        size: 18,
+                        color: changeColor,
+                      ),
+                      const SizedBox(width: AppSpacing.xs),
+                      Flexible(
+                        child: Text(
+                          changeText,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: changeColor,
                           ),
                         ),
-                      ],
-                    ),
-                  ],
-                  if (caption != null) ...[
-                    const SizedBox(height: AppSpacing.xs),
-                    Text(caption!, style: theme.textTheme.bodySmall),
-                  ],
+                      ),
+                    ],
+                  ),
                 ],
-              ),
+                if (caption != null) ...[
+                  const SizedBox(height: AppSpacing.xs),
+                  Text(caption!, style: theme.textTheme.bodySmall),
+                ],
+              ],
             ),
           ),
         ),

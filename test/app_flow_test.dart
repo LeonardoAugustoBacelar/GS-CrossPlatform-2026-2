@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mirante/features/alerts/presentation/widgets/alert_widgets.dart';
+import 'package:mirante/shared/widgets/kpi_tile.dart';
 
 import 'support/fixtures.dart';
 import 'support/test_app.dart';
@@ -123,6 +125,31 @@ void main() {
     await tester.tap(find.text('Alertas').last);
     await tester.pumpAndSettle();
     await scrollTo(tester, find.textContaining('Onda de calor prevista'));
+  });
+
+  testWidgets('leitor de tela consegue abrir alertas e indicadores', (
+    tester,
+  ) async {
+    final semantics = tester.ensureSemantics();
+    await pumpMirante(tester);
+
+    expect(
+      tester.getSemantics(find.byType(AlertTile).first),
+      isSemantics(isButton: true, hasTapAction: true),
+    );
+
+    await scrollTo(tester, find.text('Água e energia'));
+    await tester.tap(find.text('Água e energia'));
+    await tester.pumpAndSettle();
+    expect(
+      tester.getSemantics(find.byType(KpiTile).first),
+      isSemantics(isButton: true, hasTapAction: true),
+    );
+    expect(
+      find.bySemanticsLabel(RegExp('Ver detalhes de Consumo de água')),
+      findsOneWidget,
+    );
+    semantics.dispose();
   });
 
   group('formulário de ocorrência', () {

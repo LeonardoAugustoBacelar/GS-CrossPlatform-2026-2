@@ -75,72 +75,69 @@ class AlertTile extends ConsumerWidget {
         'Confiança ${alert.confidenceLevel.label.toLowerCase()} '
         '(${Fmt.percent(alert.confidence)})';
 
+    void open() => context.goNamed(
+      AppRoutes.alertDetail,
+      pathParameters: {'alertId': alert.id},
+    );
+
+    // Um nó só para o leitor de tela, com rótulo completo e a ação de abrir.
     return Semantics(
       button: true,
       label:
           '${alert.severity.label}: ${alert.title}. ${alert.summary} '
           '$confidence. Previsto para $when. ${alert.sectorsLabel}. '
           '${decision == null ? 'Sem decisão registrada' : 'Decisão: ${decision.outcome.label}'}.',
-      child: ExcludeSemantics(
-        child: Card(
-          clipBehavior: Clip.antiAlias,
-          child: InkWell(
-            onTap: () => context.goNamed(
-              AppRoutes.alertDetail,
-              pathParameters: {'alertId': alert.id},
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(AppSpacing.md),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Wrap(
-                    spacing: AppSpacing.sm,
-                    runSpacing: AppSpacing.xs,
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: [
-                      SeverityBadge(
-                        severity: alert.severity,
-                        heroTag: 'alerta-${alert.id}',
-                      ),
-                      Text(
-                        alert.kind.label,
-                        style: theme.textTheme.labelMedium,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  Text(alert.title, style: theme.textTheme.titleMedium),
-                  const SizedBox(height: AppSpacing.xs),
-                  Text(
-                    alert.summary,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  Wrap(
-                    spacing: AppSpacing.md,
-                    runSpacing: AppSpacing.xs,
-                    children: [
-                      _Meta(icon: Icons.insights, text: confidence),
-                      _Meta(icon: Icons.event, text: _cap(when)),
-                      _Meta(
-                        icon: Icons.place_outlined,
-                        text: alert.sectorsLabel,
-                      ),
-                      _Meta(
-                        icon: decision == null
-                            ? Icons.pending_outlined
-                            : Icons.how_to_reg_outlined,
-                        text: decision == null
-                            ? 'Aguardando decisão'
-                            : decision.outcome.label,
-                        emphasize: decision == null,
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+      onTap: open,
+      excludeSemantics: true,
+      child: Card(
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: open,
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.md),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Wrap(
+                  spacing: AppSpacing.sm,
+                  runSpacing: AppSpacing.xs,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    SeverityBadge(
+                      severity: alert.severity,
+                      heroTag: 'alerta-${alert.id}',
+                    ),
+                    Text(alert.kind.label, style: theme.textTheme.labelMedium),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                Text(alert.title, style: theme.textTheme.titleMedium),
+                const SizedBox(height: AppSpacing.xs),
+                Text(
+                  alert.summary,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                Wrap(
+                  spacing: AppSpacing.md,
+                  runSpacing: AppSpacing.xs,
+                  children: [
+                    _Meta(icon: Icons.insights, text: confidence),
+                    _Meta(icon: Icons.event, text: _cap(when)),
+                    _Meta(icon: Icons.place_outlined, text: alert.sectorsLabel),
+                    _Meta(
+                      icon: decision == null
+                          ? Icons.pending_outlined
+                          : Icons.how_to_reg_outlined,
+                      text: decision == null
+                          ? 'Aguardando decisão'
+                          : decision.outcome.label,
+                      emphasize: decision == null,
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
         ),

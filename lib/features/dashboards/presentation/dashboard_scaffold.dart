@@ -102,14 +102,13 @@ class IndicatorDetailsButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Align(
       alignment: Alignment.centerRight,
-      child: Semantics(
-        button: true,
-        label: 'Ver detalhes de ${indicator.name}',
-        excludeSemantics: true,
-        child: TextButton.icon(
-          onPressed: () => openIndicator(context, indicator),
-          icon: const Icon(Icons.arrow_forward),
-          label: const Text('Ver detalhes'),
+      child: TextButton.icon(
+        onPressed: () => openIndicator(context, indicator),
+        icon: const Icon(Icons.arrow_forward),
+        // O leitor de tela diz de qual indicador são os detalhes.
+        label: Text(
+          'Ver detalhes',
+          semanticsLabel: 'Ver detalhes de ${indicator.name}',
         ),
       ),
     );
