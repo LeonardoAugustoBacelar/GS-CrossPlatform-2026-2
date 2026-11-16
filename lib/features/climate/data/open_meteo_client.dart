@@ -13,7 +13,8 @@ class OpenMeteoClient {
 
   final http.Client _http;
 
-  static const _timeout = Duration(seconds: 12);
+  static const _timeout = Duration(seconds: 15);
+  static const _attempts = 2;
   static const historyDays = 60;
   static const forecastDays = 7;
 
@@ -43,11 +44,19 @@ class OpenMeteoClient {
     'timezone': 'America/Sao_Paulo',
   };
 
+  /// GET com uma nova tentativa: redes móveis falham de forma passageira.
   Future<Map<String, dynamic>> _get(Uri uri) async {
-    final response = await _http.get(uri).timeout(_timeout);
-    if (response.statusCode != 200) {
-      throw http.ClientException('HTTP ${response.statusCode}', uri);
+    for (var attempt = 1; ; attempt++) {
+      try {
+        final response = await _http.get(uri).timeout(_timeout);
+        if (response.statusCode != 200) {
+          throw http.ClientException('HTTP ${response.statusCode}', uri);
+        }
+        return jsonDecode(response.body) as Map<String, dynamic>;
+      } on Exception {
+        if (attempt >= _attempts) rethrow;
+        await Future<void>.delayed(const Duration(seconds: 1));
+      }
     }
-    return jsonDecode(response.body) as Map<String, dynamic>;
   }
 }

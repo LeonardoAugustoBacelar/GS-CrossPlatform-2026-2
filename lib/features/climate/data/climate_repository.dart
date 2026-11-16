@@ -20,14 +20,17 @@ class ClimateRepository {
 
   Future<ClimateSnapshot> load() async {
     try {
+      // As duas consultas correm em paralelo. Qualidade do ar é
+      // complementar: se falhar, usa a última cópia salva (ou segue sem ela).
+      final airFuture = _client
+          .fetchAirQuality()
+          .then<Map<String, dynamic>?>((value) => value)
+          .catchError(
+            (Object _) =>
+                _cache.read(_cacheKey)?['air'] as Map<String, dynamic>?,
+          );
       final weather = await _client.fetchWeather();
-      Map<String, dynamic>? air;
-      try {
-        air = await _client.fetchAirQuality();
-      } on Exception {
-        // Qualidade do ar é complementar: o painel segue sem ela.
-        air = _cache.read(_cacheKey)?['air'] as Map<String, dynamic>?;
-      }
+      final air = await airFuture;
       final payload = {
         'fetchedAt': _clock().toIso8601String(),
         'weather': weather,
