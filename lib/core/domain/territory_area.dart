@@ -17,7 +17,7 @@ enum TerritoryArea {
   ),
   servicos(
     label: 'Serviços públicos',
-    description: 'Demanda por saúde, coleta e transporte',
+    description: 'Demanda nas UBS e coleta de lixo',
     icon: Icons.local_hospital_outlined,
   );
 

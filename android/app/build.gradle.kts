@@ -6,7 +6,8 @@ plugins {
 
 android {
     namespace = "br.fiap.gs.mirante"
-    compileSdk = flutter.compileSdkVersion
+    // API 37: exigida pelo flutter_local_notifications e pelo androidx.core atual.
+    compileSdk = 37
     ndkVersion = flutter.ndkVersion
 
     compileOptions {

@@ -5,8 +5,8 @@ import '../../core/theme/app_spacing.dart';
 
 /// Estados padrão de carregamento, erro e lista vazia.
 ///
-/// Toda tela que carrega dados deve usar [AsyncValueView] (ou estes widgets
-/// diretamente) para que os três estados tenham a mesma aparência no app todo.
+/// Toda tela que carrega dados usa [AsyncValueView] (ou estes widgets
+/// diretamente) para que os três estados tenham a mesma aparência no app.
 
 class LoadingView extends StatelessWidget {
   const LoadingView({super.key, this.message = 'Carregando dados…'});
@@ -19,13 +19,16 @@ class LoadingView extends StatelessWidget {
       child: Semantics(
         liveRegion: true,
         label: message,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const CircularProgressIndicator(),
-            const SizedBox(height: AppSpacing.md),
-            ExcludeSemantics(child: Text(message)),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const CircularProgressIndicator(),
+              const SizedBox(height: AppSpacing.md),
+              ExcludeSemantics(child: Text(message)),
+            ],
+          ),
         ),
       ),
     );
@@ -33,18 +36,26 @@ class LoadingView extends StatelessWidget {
 }
 
 class ErrorView extends StatelessWidget {
-  const ErrorView({super.key, required this.message, this.onRetry});
+  const ErrorView({
+    super.key,
+    required this.message,
+    this.onRetry,
+    this.scrollable = true,
+  });
 
   final String message;
   final VoidCallback? onRetry;
 
+  /// Use `false` quando o widget já estiver dentro de uma lista rolável.
+  final bool scrollable;
+
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
     return _CenteredMessage(
       icon: Icons.cloud_off_outlined,
-      iconColor: scheme.error,
+      iconColor: Theme.of(context).colorScheme.error,
       message: message,
+      scrollable: scrollable,
       action: onRetry == null
           ? null
           : FilledButton.icon(
@@ -62,11 +73,15 @@ class EmptyView extends StatelessWidget {
     required this.message,
     this.icon = Icons.inbox_outlined,
     this.action,
+    this.scrollable = true,
   });
 
   final String message;
   final IconData icon;
   final Widget? action;
+
+  /// Use `false` quando o widget já estiver dentro de uma lista rolável.
+  final bool scrollable;
 
   @override
   Widget build(BuildContext context) {
@@ -75,11 +90,13 @@ class EmptyView extends StatelessWidget {
       iconColor: Theme.of(context).colorScheme.outline,
       message: message,
       action: action,
+      scrollable: scrollable,
     );
   }
 }
 
-/// Mapeia um [AsyncValue] do Riverpod para carregamento, erro, vazio ou dados.
+/// Mapeia um [AsyncValue] do Riverpod para carregamento, erro, vazio ou dados,
+/// com uma transição curta entre os estados.
 class AsyncValueView<T> extends StatelessWidget {
   const AsyncValueView({
     super.key,
@@ -100,14 +117,24 @@ class AsyncValueView<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return switch (value) {
-      AsyncData(:final value) when isEmpty?.call(value) ?? false => EmptyView(
-        message: emptyMessage,
+    final (key, child) = switch (value) {
+      AsyncData(:final value) when isEmpty?.call(value) ?? false => (
+        'empty',
+        EmptyView(message: emptyMessage),
       ),
-      AsyncData(:final value) => builder(value),
-      AsyncError() => ErrorView(message: errorMessage, onRetry: onRetry),
-      _ => const LoadingView(),
+      AsyncData(:final value) => ('data', builder(value)),
+      AsyncError() => (
+        'error',
+        ErrorView(message: errorMessage, onRetry: onRetry),
+      ),
+      _ => ('loading', const LoadingView()),
     };
+    return AnimatedSwitcher(
+      duration: MediaQuery.disableAnimationsOf(context)
+          ? Duration.zero
+          : const Duration(milliseconds: 250),
+      child: KeyedSubtree(key: ValueKey(key), child: child),
+    );
   }
 }
 
@@ -116,36 +143,38 @@ class _CenteredMessage extends StatelessWidget {
     required this.icon,
     required this.iconColor,
     required this.message,
+    required this.scrollable,
     this.action,
   });
 
   final IconData icon;
   final Color iconColor;
   final String message;
+  final bool scrollable;
   final Widget? action;
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 56, color: iconColor),
-            const SizedBox(height: AppSpacing.md),
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-            if (action != null) ...[
-              const SizedBox(height: AppSpacing.lg),
-              action!,
-            ],
+    final content = Padding(
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ExcludeSemantics(child: Icon(icon, size: 56, color: iconColor)),
+          const SizedBox(height: AppSpacing.md),
+          Text(
+            message,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+          if (action != null) ...[
+            const SizedBox(height: AppSpacing.lg),
+            action!,
           ],
-        ),
+        ],
       ),
     );
+    if (!scrollable) return Center(child: content);
+    return Center(child: SingleChildScrollView(child: content));
   }
 }

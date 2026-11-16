@@ -462,6 +462,7 @@ abstract final class AlertEngine {
           sectorIds: [sector.id],
           indicatorId: IndicatorIds.waterLoss,
           expectedDate: dateOnly(input.today),
+          recoverableLitersPerDay: recoverableLiters,
           benefit:
               'Se confirmado e corrigido, cerca de '
               '${Fmt.compact(recoverableLiters)} litros/dia deixam de ser '

@@ -52,6 +52,10 @@ abstract final class AppTheme {
           borderRadius: BorderRadius.circular(AppSpacing.radius / 2),
         ),
       ),
+      snackBarTheme: const SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        showCloseIcon: true,
+      ),
       extensions: [
         brightness == Brightness.dark
             ? AppColors.severityDark

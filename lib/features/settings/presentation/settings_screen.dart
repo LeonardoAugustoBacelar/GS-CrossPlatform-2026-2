@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../core/config/territory_config.dart';
+import '../../../core/router/app_routes.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../shared/feedback.dart';
+import '../../alerts/application/alerts_providers.dart';
+import '../../notifications/alert_notifier.dart';
 import '../application/settings_controller.dart';
 
-/// Acessibilidade (tema, alto contraste, tamanho da fonte) e privacidade.
+/// Alertas, acessibilidade (tema, contraste, fonte), privacidade e fontes.
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
@@ -12,6 +18,7 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(settingsProvider);
     final controller = ref.read(settingsProvider.notifier);
+    final thresholds = ref.watch(thresholdsProvider);
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
@@ -19,7 +26,31 @@ class SettingsScreen extends ConsumerWidget {
       body: ListView(
         padding: AppSpacing.screen,
         children: [
-          const _SectionTitle('Aparência'),
+          const _SectionTitle('Alertas'),
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: const Icon(Icons.tune),
+            title: const Text('Limiares de alerta'),
+            subtitle: Text(
+              thresholds.isDefault
+                  ? 'Usando os valores padrão'
+                  : 'Personalizados pela equipe',
+            ),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => context.goNamed(AppRoutes.thresholds),
+          ),
+          SwitchListTile(
+            contentPadding: EdgeInsets.zero,
+            secondary: const Icon(Icons.notifications_active_outlined),
+            title: const Text('Notificar alertas críticos'),
+            subtitle: const Text(
+              'Aviso no celular quando surgir um alerta crítico',
+            ),
+            value: settings.notificationsEnabled,
+            onChanged: (value) => _toggleNotifications(context, ref, value),
+          ),
+          const Divider(height: AppSpacing.xl),
+          const _SectionTitle('Aparência e acessibilidade'),
           const SizedBox(height: AppSpacing.sm),
           SegmentedButton<ThemeMode>(
             segments: const [
@@ -33,6 +64,7 @@ class SettingsScreen extends ConsumerWidget {
           ),
           SwitchListTile(
             contentPadding: EdgeInsets.zero,
+            secondary: const Icon(Icons.contrast),
             title: const Text('Alto contraste'),
             subtitle: const Text('Reforça cores e bordas'),
             value: settings.highContrast,
@@ -50,6 +82,10 @@ class SettingsScreen extends ConsumerWidget {
                 'Tamanho do texto ${(value * 100).round()} por cento',
             onChanged: controller.setTextScale,
           ),
+          Text(
+            'Soma-se ao tamanho de fonte do sistema. Exemplo de texto.',
+            style: textTheme.bodyMedium,
+          ),
           const Divider(height: AppSpacing.xl),
           const _SectionTitle('Privacidade'),
           ListTile(
@@ -57,12 +93,74 @@ class SettingsScreen extends ConsumerWidget {
             leading: const Icon(Icons.delete_outline),
             title: const Text('Retirar consentimento e apagar dados'),
             subtitle: const Text(
-              'Remove ocorrências e preferências guardadas neste aparelho',
+              'Remove relatos, decisões e preferências deste aparelho',
             ),
             onTap: () => _confirmRevoke(context, controller),
           ),
+          const Divider(height: AppSpacing.xl),
+          const _SectionTitle('Sobre os dados'),
+          const ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: Icon(Icons.public),
+            title: Text('Clima e qualidade do ar: dados reais'),
+            subtitle: Text(
+              'Open-Meteo (previsão do tempo e modelo CAMS), dados abertos '
+              'e gratuitos.',
+            ),
+          ),
+          const ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: Icon(Icons.science_outlined),
+            title: Text('Água, energia e serviços: dados sintéticos'),
+            subtitle: Text(
+              'Gerados por uma API simulada para fins acadêmicos. Mostram o '
+              'método, não a situação real do território.',
+            ),
+          ),
+          const ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: Icon(Icons.map_outlined),
+            title: Text('Mapa'),
+            subtitle: Text('© colaboradores do OpenStreetMap'),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          Text(
+            'Mirante · ${TerritoryConfig.name} · Projeto acadêmico FIAP, '
+            'Global Solution 2026.2',
+            style: textTheme.bodySmall,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: AppSpacing.lg),
         ],
       ),
+    );
+  }
+
+  Future<void> _toggleNotifications(
+    BuildContext context,
+    WidgetRef ref,
+    bool enable,
+  ) async {
+    final controller = ref.read(settingsProvider.notifier);
+    if (!enable) {
+      await controller.setNotificationsEnabled(false);
+      return;
+    }
+    final granted = await ref.read(alertNotifierProvider).requestPermission();
+    await controller.setNotificationsEnabled(granted);
+    if (granted) {
+      final report = ref.read(alertReportProvider).value;
+      if (report != null) {
+        await ref.read(alertNotifierProvider).notifyCritical(report.alerts);
+      }
+    }
+    if (!context.mounted) return;
+    showFeedback(
+      context,
+      granted
+          ? 'Notificações ativadas para alertas críticos.'
+          : 'Permissão negada. Ative as notificações nas configurações do '
+                'celular.',
     );
   }
 

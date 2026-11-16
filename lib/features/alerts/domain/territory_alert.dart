@@ -57,6 +57,7 @@ class TerritoryAlert {
     required this.indicatorId,
     required this.expectedDate,
     this.benefit,
+    this.recoverableLitersPerDay,
   });
 
   /// Estável entre execuções (tipo + setor), para guardar a decisão humana.
@@ -87,6 +88,10 @@ class TerritoryAlert {
 
   /// Benefício social potencial de agir a tempo.
   final String? benefit;
+
+  /// Água que deixaria de ser perdida por dia se o problema for corrigido
+  /// (só nos alertas de perdas). Alimenta o indicador de benefício social.
+  final double? recoverableLitersPerDay;
 
   ConfidenceLevel get confidenceLevel => ConfidenceLevel.of(confidence);
 

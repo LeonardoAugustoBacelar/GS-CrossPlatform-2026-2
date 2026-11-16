@@ -67,7 +67,7 @@ class SyntheticTerritoryApi {
         final waterBase = _waterBase[sector.id]!;
         water.add(
           waterBase * (1 + 0.017 * heat) * (weekend ? 1.05 : 1) +
-              2.5 * noise('agua'),
+              6 * noise('agua'),
         );
 
         // Perdas na distribuição (%), com vazamento plantado no Jardim Ângela Sul.
