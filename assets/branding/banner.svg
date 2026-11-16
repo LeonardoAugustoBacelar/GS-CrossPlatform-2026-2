@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="320" viewBox="0 0 1200 320" role="img" aria-label="Mirante: inteligência territorial para decisões humanas">
+  <rect width="1200" height="320" rx="24" fill="#0B5C6B"/>
+  <g fill="none" stroke="#FFFFFF" stroke-opacity="0.09" stroke-width="2">
+    <path d="M0 220 C 180 180, 360 250, 580 210 S 980 170, 1200 220"/>
+    <path d="M0 250 C 200 210, 380 280, 600 240 S 1000 200, 1200 250"/>
+    <path d="M0 280 C 220 240, 400 310, 620 270 S 1020 230, 1200 280"/>
+  </g>
+  <g transform="translate(160 160)">
+    <circle r="64" fill="none" stroke="#E0A100" stroke-width="6"/>
+    <circle r="38" fill="none" stroke="#FFFFFF" stroke-opacity="0.6" stroke-width="4"/>
+    <circle r="12" fill="#E0A100"/>
+  </g>
+  <text x="270" y="166" font-family="Helvetica, Arial, sans-serif" font-size="88" font-weight="700" fill="#FFFFFF">Mirante</text>
+  <text x="274" y="220" font-family="Helvetica, Arial, sans-serif" font-size="30" fill="#FFFFFF" fill-opacity="0.88">Inteligência territorial para decisões humanas</text>
+</svg>

@@ -1,0 +1,10 @@
+=== GLOBAL SOLUTION 2026.2 ===
+Disciplina: Cross-Platform Application Development
+Desafio: Territory Predictive Insights
+
+Integrante 1: Leonardo Augusto | RM: 565564
+Integrante 2: Pedro Gabriel | RM: 562242
+Integrante 3: Alexandre Campão | RM: 563346
+
+GitHub: https://github.com/LeonardoAugustoBacelar/GS-CrossPlatform-2026-2
+Vídeo: https://...
