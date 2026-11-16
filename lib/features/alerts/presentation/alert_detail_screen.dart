@@ -312,6 +312,7 @@ class _DecisionSectionState extends ConsumerState<_DecisionSection> {
               decoration: const InputDecoration(
                 labelText: 'Observação (opcional)',
                 hintText: 'Ex.: equipe de vistoria agendada para amanhã',
+                errorMaxLines: 2,
               ),
               validator: (value) =>
                   OccurrenceValidators.containsPersonalData(value ?? '')

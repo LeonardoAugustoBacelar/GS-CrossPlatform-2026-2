@@ -226,6 +226,8 @@ class _OccurrenceFormScreenState extends ConsumerState<OccurrenceFormScreen> {
                 labelText: 'O que aconteceu? *',
                 hintText: 'Ex.: rua alagada perto da escola desde as 7h',
                 alignLabelWithHint: true,
+                // A mensagem de dados pessoais é longa: não pode ser cortada.
+                errorMaxLines: 3,
               ),
               validator: OccurrenceValidators.description,
             ),
