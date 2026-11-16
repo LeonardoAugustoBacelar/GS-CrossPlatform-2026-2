@@ -229,7 +229,9 @@ flutter test      # 40 testes
 
 ## Vídeo
 
-▶️ **[Assistir à demonstração (2 min 30 s)](https://github.com/LeonardoAugustoBacelar/GS-CrossPlatform-2026-2/releases/download/v1.0.0/mirante-demo.mp4)**
+▶️ **[Assistir à demonstração no YouTube (2 min 30 s)](https://youtu.be/uWsM7GNM10w)**
+
+Cópia do arquivo: [mirante-demo.mp4](https://github.com/LeonardoAugustoBacelar/GS-CrossPlatform-2026-2/releases/download/v1.0.0/mirante-demo.mp4) (Releases).
 
 O vídeo, legendado, mostra todas as telas: consentimento, visão geral, os 3 dashboards, o detalhe do indicador, **um alerta sendo gerado** (o gestor baixa o limiar de calor e o alerta aparece com evidência, confiança e limitações), a decisão humana, o relato anônimo com bloqueio de dados pessoais, o uso offline, o mapa e os recursos de acessibilidade.
 
