@@ -491,9 +491,9 @@ FlTitlesData _titles(
         reservedSize: 28,
         interval: 1,
         getTitlesWidget: (value, meta) {
-          // Uma data a cada semana (ou a cada 3 dias em séries curtas), sem
+          // Uma data a cada 1 ou 2 semanas (3 dias em séries curtas), sem
           // sobreposição no fim do eixo.
-          final step = maxX > 20 ? 7 : 3;
+          final step = maxX > 45 ? 14 : (maxX > 20 ? 7 : 3);
           final day = value.round();
           if (value != day || day % step != 0 || maxX - day < step / 2) {
             return const SizedBox.shrink();
